@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc",
-    "prod": "node dist/index.js"
+    "prod": "npm run build && node dist/index.js"
   },
   "author": "semyart",
   "license": "ISC",
