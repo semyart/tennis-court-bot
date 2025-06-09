@@ -41,7 +41,7 @@ bot.api.setMyCommands([
 ]);
 
 const startCron = () => {
-  cron.schedule("* * * * *", async () => {
+  cron.schedule("0 18 * * *", async () => {
     const courts = await getAllCourts();
     const activeCourts = courts.filter((court) => court.isActive);
     const dayGap = 3;
