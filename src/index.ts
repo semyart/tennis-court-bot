@@ -23,6 +23,23 @@ dotenv.config();
 const bot = new Bot(process.env.BOT_API_KEY!);
 bot.use(ignoreOld(30));
 
+bot.api.setMyCommands([
+  { command: "start", description: "Добавить корт в базу" },
+  { command: "book", description: "Забронировать часы (пример: /book 14,15)" },
+  {
+    command: "unbook",
+    description: "Отменить бронирование (пример: /unbook 14)",
+  },
+  { command: "set_booking_hours", description: "Настроить часы бронирования" },
+  {
+    command: "set_max_hours",
+    description: "Лимит часов в день: будни/выходные",
+  },
+  { command: "set_max_hours_weekly", description: "Лимит часов в неделю" },
+  { command: "start_bot", description: "Включить автосоздание тем" },
+  { command: "stop_bot", description: "Отключить автосоздание тем" },
+]);
+
 const startCron = () => {
   cron.schedule("* * * * *", async () => {
     const courts = await getAllCourts();
