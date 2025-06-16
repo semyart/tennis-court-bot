@@ -1,10 +1,11 @@
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import Court from "./db/models/Court";
-import Book from "./db/models/Book";
+import Booking from "./db/models/Booking";
 import Day from "./db/models/Day";
 import { Bot } from "grammy";
 import { updateScheduleMessage } from "./schedule";
+import { getTopicMutex } from "./utils/topic-mutex";
 
 dayjs.extend(isBetween);
 
@@ -18,7 +19,7 @@ const getUserBookingsInSameWeek = async ({
   const weekStart = dayjs(referenceDate).startOf("week");
   const weekEnd = dayjs(referenceDate).endOf("week");
 
-  const allBookings = await Book.find({ userId });
+  const allBookings = await Booking.find({ userId });
 
   const bookingsWithDates = await Promise.all(
     allBookings.map(async (b) => {
@@ -88,7 +89,7 @@ const tryBook = async ({
     : court.maxHoursWeekday;
 
   // Получаем уже занятые часы
-  const existingBookings = await Book.find({ courtId, threadId });
+  const existingBookings = await Booking.find({ courtId, threadId });
   const takenHours = new Set(existingBookings.flatMap((b) => b.hours));
 
   // Получаем уже забронированные текущим пользователем часы
@@ -137,7 +138,7 @@ const tryBook = async ({
   }
 
   if (hoursToBook.length) {
-    await Book.create({
+    await Booking.create({
       courtId,
       threadId,
       userId,
@@ -173,7 +174,7 @@ const unbookHours = async ({
   userId: number;
   requestedHours: number[];
 }) => {
-  const bookings = await Book.find({ courtId, threadId, userId });
+  const bookings = await Booking.find({ courtId, threadId, userId });
 
   const toUnbook: number[] = [];
   const skipped: number[] = [];
@@ -184,7 +185,7 @@ const unbookHours = async ({
       booking.hours = booking.hours.filter((h) => h !== hour);
 
       if (booking.hours.length === 0) {
-        await Book.deleteOne({ _id: booking._id });
+        await Booking.deleteOne({ _id: booking._id });
       } else {
         await booking.save();
       }
@@ -280,14 +281,39 @@ const createBookingCommand = ({
   });
 };
 
+const book = async ({
+  courtId,
+  threadId,
+  userId,
+  username,
+  requestedHours,
+}: {
+  courtId: number;
+  threadId: number;
+  userId: number;
+  username: string;
+  requestedHours: number[];
+}) => {
+  const mutex = getTopicMutex(courtId, threadId);
+
+  return await mutex.runExclusive(async () => {
+    return await tryBook({
+      courtId,
+      threadId,
+      userId,
+      username,
+      requestedHours,
+    });
+  });
+};
+
 export const handleBookCommands = (bot: Bot) => {
   createBookingCommand({
     bot,
     commandName: "book",
-    handler: tryBook,
-    exampleText: "/book 14,15",
-    emptyInputMessage:
-      "❌ Пожалуйста, укажите часы для бронирования. Только целые числа через запятую.",
+    handler: book,
+    exampleText: "/book 14",
+    emptyInputMessage: "❌ Пожалуйста, укажите часы для бронирования.",
   });
 
   createBookingCommand({

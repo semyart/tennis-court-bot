@@ -1,5 +1,5 @@
 import Day from "./db/models/Day";
-import Book from "./db/models/Book";
+import Booking from "./db/models/Booking";
 import Court from "./db/models/Court";
 import { Bot } from "grammy";
 
@@ -35,7 +35,7 @@ export const updateScheduleMessage = async ({
   const day = await Day.findOne({ threadId });
   if (!court || !day) return;
 
-  const bookings = await Book.find({ courtId, threadId });
+  const bookings = await Booking.find({ courtId, threadId });
 
   const bookingsFlat = bookings.flatMap((b) =>
     b.hours.map((hour) => ({

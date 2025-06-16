@@ -1,4 +1,4 @@
-import Book from "../models/Book";
+import Booking from "../models/Booking";
 
 export const createBook = async (
   courtId: number,
@@ -7,7 +7,7 @@ export const createBook = async (
   username: string,
   hours: number[]
 ) => {
-  Book.create({ courtId, threadId, userId, username, hours });
+  Booking.create({ courtId, threadId, userId, username, hours });
 };
 
 export const findBook = async (
@@ -15,7 +15,7 @@ export const findBook = async (
   threadId: number,
   hours: number[]
 ) =>
-  await Book.find({
+  await Booking.find({
     courtId,
     threadId,
     hours: { $in: hours },
@@ -24,7 +24,7 @@ export const findBook = async (
 export const removeBookings = async (
   oldKeys: Array<{ threadId: number; courtId: number }>
 ) => {
-  return await Book.bulkWrite(
+  return await Booking.bulkWrite(
     oldKeys.map(({ threadId, courtId }) => ({
       deleteMany: {
         filter: { threadId, courtId },
