@@ -23,6 +23,14 @@ dotenv.config();
 const bot = new Bot(process.env.BOT_API_KEY!);
 bot.use(ignoreOld(30));
 
+bot.catch((err) => {
+  const ctx = err.ctx;
+  console.error(
+    `❗ Ошибка в обработке update ${ctx.update.update_id}:`,
+    err.error
+  );
+});
+
 bot.api.setMyCommands([
   { command: "start", description: "Добавить корт в базу" },
   { command: "book", description: "Забронировать часы (пример: /book 14,15)" },
