@@ -16,7 +16,7 @@ export const generateScheduleText = ({
 
   for (let h = startHour; h <= endHour; h++) {
     const booking = bookings.find((b) => b.hour === h);
-    lines.push(`${h}:00 — ${booking ? `@${booking.username}` : ""}`);
+    lines.push(`${h}:00 — ${booking ? `${booking.username}` : ""}`);
   }
 
   return lines.join("\n");

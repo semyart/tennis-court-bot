@@ -1,22 +1,22 @@
-import { Bot } from "grammy";
 import dotenv from "dotenv";
+import { Bot } from "grammy";
+import { ignoreOld, onlyAdmin } from "grammy-middlewares";
+import cron from "node-cron";
 import { connectToDB } from "./db";
 import Court from "./db/models/Court";
-import { ignoreOld, onlyAdmin } from "grammy-middlewares";
 import { handleSettingsCommands } from "./settings";
-import cron from "node-cron";
 
+import dayjs from "dayjs";
+import { handleBookCommands } from "./book";
+import { removeBookings } from "./db/repositories/book";
 import { getAllCourts } from "./db/repositories/court";
 import {
   createDay,
   getDaysBeforeDate,
   removeDays,
 } from "./db/repositories/day";
+import { generateScheduleText } from "./schedule";
 import { getThreadTitle, isWeekend } from "./utils/common";
-import dayjs from "dayjs";
-import { handleBookCommands } from "./book";
-import { generateScheduleText, updateScheduleMessage } from "./schedule";
-import { removeBookings } from "./db/repositories/book";
 
 dotenv.config();
 

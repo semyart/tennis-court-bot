@@ -1,13 +1,13 @@
 import Booking from "../models/Booking";
 
-export const createBook = async (
-  courtId: number,
-  threadId: number,
-  userId: number,
-  username: string,
-  hours: number[]
-) => {
-  Booking.create({ courtId, threadId, userId, username, hours });
+export const createBook = async (booking: {
+  courtId: number;
+  threadId: number;
+  userId: number;
+  username: string;
+  hours: number[];
+}) => {
+  Booking.create(booking);
 };
 
 export const findBook = async (

@@ -6,6 +6,7 @@ import Day from "./db/models/Day";
 import { Bot } from "grammy";
 import { updateScheduleMessage } from "./schedule";
 import { getTopicMutex } from "./utils/topic-mutex";
+import { createBook } from "./db/repositories/book";
 
 dayjs.extend(isBetween);
 
@@ -138,7 +139,7 @@ const tryBook = async ({
   }
 
   if (hoursToBook.length) {
-    await Booking.create({
+    await createBook({
       courtId,
       threadId,
       userId,
@@ -260,7 +261,7 @@ const createBookingCommand = ({
     }
 
     const username = ctx.from?.username
-      ? `${ctx.from.first_name} (${ctx.from.username})`
+      ? `${ctx.from.first_name} (@${ctx.from.username})`
       : ctx.from.first_name;
 
     const result = await handler({
