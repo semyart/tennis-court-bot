@@ -272,12 +272,17 @@ const createBookingCommand = ({
       requestedHours,
     });
 
-    ctx.reply(result.message, {
-      reply_to_message_id: ctx.message.message_id,
-    });
-
     if (result.success) {
-      await updateScheduleMessage({ courtId, threadId, bot });
+      const schedule = await updateScheduleMessage({ courtId, threadId, bot });
+      if (schedule) {
+        ctx.reply(schedule, {
+          message_thread_id: ctx.message.message_thread_id,
+        });
+      }
+    } else {
+      ctx.reply(result.message, {
+        message_thread_id: ctx.message.message_thread_id,
+      });
     }
   });
 };

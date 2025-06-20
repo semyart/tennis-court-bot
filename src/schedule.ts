@@ -50,5 +50,5 @@ export const updateScheduleMessage = async ({
     bookings: bookingsFlat,
   });
 
-  await bot.api.editMessageText(courtId, day.scheduleMessageId, text);
+  return text;
 };
